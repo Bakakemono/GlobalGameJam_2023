@@ -34,15 +34,19 @@ public class RootBehavior : MonoBehaviour
 
         if(input.x > 0) {
             direction = Vector2.right;
+            transform.rotation = Quaternion.Euler(new Vector3(0, 0, -90.0f));
         }
         else if(input.x < 0) {
             direction = Vector2.left;
+            transform.rotation = Quaternion.Euler(new Vector3(0, 0, 90.0f));
         }
         else if(input.y > 0) {
             direction = Vector2.up;
+            transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0.0f));
         }
         else if(input.y < 0) {
             direction = Vector2.down;
+            transform.rotation = Quaternion.Euler(new Vector3(0, 0, 180.0f));
         }
 
         GameObject.Instantiate(rootCorePreabs, transform.position, Quaternion.identity);
