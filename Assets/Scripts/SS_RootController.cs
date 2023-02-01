@@ -38,6 +38,8 @@ public class SS_RootController : MonoBehaviour
         for(int i = 0; i < spriteShapeController.spline.GetPointCount(); i++) {
             spriteShapeController.spline.SetTangentMode(i, ShapeTangentMode.Continuous);
         }
+
+        spriteShapeController.spline.SetHeight(rootSplinePointNmb - 1, 0.1f);
     }
 
     private void Update() {
@@ -116,14 +118,13 @@ public class SS_RootController : MonoBehaviour
     }
 
     void AddNewPointToSpline() {
-        //spriteShapeController.spline.SetTangentMode(rootSplinePointNmb - 1, ShapeTangentMode.Broken);
-
+        currentTime = totalTimer;
         spriteShapeController.spline.InsertPointAt(
-            rootSplinePointNmb - 2,
+            rootSplinePointNmb - 1,
             spriteShapeController.spline.GetPosition(rootSplinePointNmb - 2) +
             (spriteShapeController.spline.GetPosition(rootSplinePointNmb - 1) - spriteShapeController.spline.GetPosition(rootSplinePointNmb - 2)) * 0.95f
             );
         rootSplinePointNmb++;
-        //spriteShapeController.spline.SetTangentMode(rootSplinePointNmb - 1, ShapeTangentMode.Broken);
+        spriteShapeController.spline.SetTangentMode(spriteShapeController.spline.GetPointCount() - 2, ShapeTangentMode.Continuous);
     }
 }
