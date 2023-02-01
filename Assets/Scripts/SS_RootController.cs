@@ -6,6 +6,11 @@ using UnityEngine.U2D;
 public class SS_RootController : MonoBehaviour
 {
     [SerializeField] SpriteShapeController spriteShapeController;
+    float maxLength = 40.0f;
+    float currentLength = 0;
+
+    float maxLengthSegment = 2.0f;
+    float currentSegmentLength = 0.0f;
 
     Vector2 direction = Vector2.right;
     Vector2 input = Vector2.zero;
@@ -15,12 +20,13 @@ public class SS_RootController : MonoBehaviour
     float totalTimer = 2.0f;
     float currentTime = 0.0f;
 
-    float speed = 0.02f;
+    float speed = 3.0f;
+    float speedPerFrame;
 
     bool[] directionChecker;
 
     private void Start() {
-        currentTime = totalTimer;
+        speedPerFrame = speed / 50.0f;
         rootSplinePointNmb = spriteShapeController.spline.GetPointCount();
 
         spriteShapeController.spline.InsertPointAt(
@@ -51,10 +57,9 @@ public class SS_RootController : MonoBehaviour
     }
 
     private void FixedUpdate() {
-        //Vector2 pos1 = spriteShapeController.spline.GetPosition(0);
-        //Vector2 pos2 = spriteShapeController.spline.GetPosition(1);
-
-        //spriteShapeController.spline.InsertPointAt(1, Vector2.up * 3.0f + (pos1 + pos2) / 2.0f);
+        if(currentLength >= maxLength) {
+            return;
+        }
 
         if(input.x > 0) {
             direction = Vector2.right;
@@ -106,10 +111,13 @@ public class SS_RootController : MonoBehaviour
 
         spriteShapeController.spline.SetPosition(
             rootSplinePointNmb - 1,
-            spriteShapeController.spline.GetPosition(rootSplinePointNmb - 1) + (Vector3)direction * speed);
+            spriteShapeController.spline.GetPosition(rootSplinePointNmb - 1) + (Vector3)direction * speedPerFrame
+            );
 
-        currentTime -= Time.fixedDeltaTime;
-        if(currentTime > 0) {
+        currentLength += speedPerFrame;
+
+        currentSegmentLength += speedPerFrame;
+        if(currentSegmentLength < maxLengthSegment) {
             return;
         }
         currentTime = totalTimer;
@@ -118,13 +126,16 @@ public class SS_RootController : MonoBehaviour
     }
 
     void AddNewPointToSpline() {
-        currentTime = totalTimer;
+        currentSegmentLength = 0;
         spriteShapeController.spline.InsertPointAt(
             rootSplinePointNmb - 1,
             spriteShapeController.spline.GetPosition(rootSplinePointNmb - 2) +
             (spriteShapeController.spline.GetPosition(rootSplinePointNmb - 1) - spriteShapeController.spline.GetPosition(rootSplinePointNmb - 2)) * 0.95f
             );
         rootSplinePointNmb++;
-        spriteShapeController.spline.SetTangentMode(spriteShapeController.spline.GetPointCount() - 2, ShapeTangentMode.Continuous);
+        spriteShapeController.spline.SetTangentMode(rootSplinePointNmb - 2, ShapeTangentMode.Continuous);
+        if(rootSplinePointNmb > 10) {
+            spriteShapeController.spline.SetTangentMode(rootSplinePointNmb - 10, ShapeTangentMode.Linear);
+        }
     }
 }
